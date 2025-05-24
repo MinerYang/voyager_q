@@ -1,8 +1,9 @@
+import logging
 from flask import Flask, request, render_template_string, send_file
 import qrcode, os, httpx, datetime
 import openai
 from PIL import Image, ImageDraw
-from utils.api import make_api_request
+from utils.api import make_api_request, upload_file_to_s3
 
 app = Flask(__name__)
 client = openai.OpenAI(
@@ -11,6 +12,9 @@ client = openai.OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
     http_client=httpx.Client(verify=False)
 )
+
+s3_bucket='eu-north-1'
+object_path='rss'
 
 # Generate a QR code linking to the form
 @app.route('/')
@@ -34,11 +38,16 @@ def submit():
         data = request.form['feedback']
         # TODO ask bot
         res = make_api_request(client, data)
-        # You can save this to a file/database
+        # You can upload file to a object storage as well
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         filename = f"rs-{timestamp}.txt"
-        with open(f"/yminer/{filename}", "a") as f:
-            f.write(res + "\n")
+        success = upload_file_to_s3(res, s3_bucket, f"{object_path}/{filename}")
+        if success:
+            logging.info("Upload successful!")
+        else:
+            logging.info("Upload failed.")
+        # with open(f"/yminer/{filename}", "a") as f:
+        #     f.write(res + "\n")
         return "<h3>Thanks for your feedback!</h3>"
     
     return render_template_string("""

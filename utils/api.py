@@ -1,4 +1,7 @@
+from io import BytesIO
 import openai
+import boto3, logging
+from botocore.exceptions import NoCredentialsError
 
 def make_api_request(client, user_input):
     try:
@@ -17,3 +20,27 @@ def make_api_request(client, user_input):
         return text
     except openai.APIStatusError as e:
         return None
+
+
+def upload_file_to_s3(data, bucket, object_name):
+    """
+    Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket name
+    :param object_name: S3 object name.
+    :return: True if upload succeeded, else False
+    """
+
+    # Create an S3 client
+    s3_client = boto3.client('s3')
+
+    try:
+        s3_client.upload_fileobj(BytesIO(data.encode('utf-8')), bucket, object_name)
+    except NoCredentialsError:
+        logging.error("Credentials not available.")
+        return False
+    except Exception as e:
+        logging.error(f"Error uploading file: {e}")
+        return False
+    return True
