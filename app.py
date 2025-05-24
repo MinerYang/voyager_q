@@ -1,14 +1,21 @@
 from flask import Flask, request, render_template_string, send_file
-import qrcode, os
+import qrcode, os, httpx, datetime
+import openai
 from PIL import Image, ImageDraw
+from utils.api import make_api_request
 
 app = Flask(__name__)
+client = openai.OpenAI(
+    timeout=60.0,
+    base_url=os.getenv("OPENAI_API_URL"),
+    api_key=os.getenv("OPENAI_API_KEY"),
+    http_client=httpx.Client(verify=False)
+)
 
 # Generate a QR code linking to the form
 @app.route('/')
 def home():
     os.makedirs("static", exist_ok=True)
-    use_reloader=False
     link = request.url_root + 'submit'
     qr = qrcode.make(link)
     qr.save("static/qr.png")  # Save QR to serve as image
@@ -22,11 +29,16 @@ def home():
 @app.route('/submit', methods=['GET', 'POST'])
 def submit():
     os.makedirs("/yminer", exist_ok=True)
+
     if request.method == 'POST':
         data = request.form['feedback']
+        # TODO ask bot
+        res = make_api_request(client, data)
         # You can save this to a file/database
-        with open("/yminer/submissions.txt", "a") as f:
-            f.write(data + "\n")
+        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        filename = f"rs-{timestamp}.txt"
+        with open(f"/yminer/{filename}", "a") as f:
+            f.write(res + "\n")
         return "<h3>Thanks for your feedback!</h3>"
     
     return render_template_string("""
