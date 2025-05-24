@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, redirect, url_for
+from flask import Flask, request, render_template_string, send_file
 import qrcode, os
 from PIL import Image, ImageDraw
 
@@ -35,6 +35,13 @@ def submit():
             <input type="submit" value="Submit">
         </form>
     """)
+
+@app.route('/download/<filename>', methods=['GET'])
+def download_file(filename):
+    file_path = f'/tmp/{filename}'
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    return "File not found", 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=10000)
