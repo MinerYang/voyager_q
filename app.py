@@ -13,7 +13,7 @@ client = openai.OpenAI(
     http_client=httpx.Client(verify=False)
 )
 
-s3_bucket='eu-north-1'
+s3_bucket='yminer-bk'
 object_path='rss'
 
 # Generate a QR code linking to the form
