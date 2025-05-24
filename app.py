@@ -21,10 +21,11 @@ def home():
 # Input form
 @app.route('/submit', methods=['GET', 'POST'])
 def submit():
+    os.makedirs("/yminer", exist_ok=True)
     if request.method == 'POST':
         data = request.form['feedback']
         # You can save this to a file/database
-        with open("submissions.txt", "a") as f:
+        with open("/yminer/submissions.txt", "a") as f:
             f.write(data + "\n")
         return "<h3>Thanks for your feedback!</h3>"
     
@@ -38,7 +39,7 @@ def submit():
 
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
-    file_path = f'/tmp/{filename}'
+    file_path = f'/yminer/{filename}'
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True)
     return "File not found", 404
