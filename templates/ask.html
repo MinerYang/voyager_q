@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Entry</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        textarea {
+            width: 100%;
+            resize: vertical;
+            padding: 10px;
+            font-size: 1em;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #555ec0d2;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #6b73d4d2;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3> ʕ•ﻌ•ʔ 请输入关键词 ʕ•ﻌ•ʔ </h3>
+        <form method="post" onsubmit="disableSubmit(this)">
+            <textarea name="feedback" rows="4" required></textarea><br>
+            <input type="submit" value="生成 ⚆_⚆?">
+        </form>
+        <script>
+            function disableSubmit(form) {
+              form.querySelector('input[type="submit"]').disabled = true;
+              form.querySelector('input[type="submit"]').value = "生成ing...";
+            }
+          </script>
+    </div>
+</body>
+</html>
